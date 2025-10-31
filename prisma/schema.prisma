@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model UserCred {
+  id          Int           @id @default(autoincrement())
+  email       String        @unique @db.VarChar(300)
+  password    String        @db.VarChar(300)
+  token       String        @unique @db.VarChar(300)
+  name        String        @db.VarChar(300)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  UserFav     UserFav[]
+  UserSession UserSession[]
+}
+
+model UserSession {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique @db.VarChar(300)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      UserCred @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "UserSession_userId_fkey")
+}
+
+model UserFav {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  active    Boolean  @default(true)
+  title     String   @db.VarChar(300)
+  type      String   @db.VarChar(300)
+  director  String   @db.VarChar(300)
+  budget    String   @db.VarChar(300)
+  location  String   @db.VarChar(300)
+  duration  String   @db.VarChar(300)
+  time      String   @db.VarChar(300)
+  image     String   @db.VarChar(300)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      UserCred @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "UserFav_userId_fkey")
+}
