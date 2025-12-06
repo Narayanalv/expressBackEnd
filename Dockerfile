@@ -5,6 +5,8 @@ ARG NODE_VERSION=20
 FROM node:${NODE_VERSION}-slim AS builder
 WORKDIR /app
 ENV CI=true
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
 
 COPY package.json pnpm-lock.yaml tsconfig.json ./
 COPY prisma ./prisma
