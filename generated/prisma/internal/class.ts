@@ -22,7 +22,7 @@ const config: runtime.GetPrismaClientConfig = {
       "value": "prisma-client"
     },
     "output": {
-      "value": "C:\\Users\\Naray\\Documents\\project-movie\\expressBackEnd\\generated\\prisma",
+      "value": "C:\\Users\\Naray\\OneDrive\\Documents\\JavaScript\\expressBackEnd\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -36,7 +36,7 @@ const config: runtime.GetPrismaClientConfig = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\Naray\\Documents\\project-movie\\expressBackEnd\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\Naray\\OneDrive\\Documents\\JavaScript\\expressBackEnd\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativePath": "../../prisma",

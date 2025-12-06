@@ -1,30 +1,32 @@
-FROM node:20-alpine
+# syntax=docker/dockerfile:1
 
+ARG NODE_VERSION=20
+
+FROM node:${NODE_VERSION}-slim AS builder
 WORKDIR /app
+ENV CI=true
 
-# Install pnpm
-RUN npm install -g pnpm
+COPY package.json pnpm-lock.yaml tsconfig.json ./
+COPY prisma ./prisma
+RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN pnpm install --frozen-lockfile
 
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
-
-# Install dependencies
-RUN pnpm install --frozen-lockfile --prod
-
-# Copy prisma schema
-COPY prisma ./prisma/
-
-# Copy source code
 COPY . .
-
-# Set dummy DATABASE_URL for build
-ENV DATABASE_URL="postgresql://dummy:dummy@dummy:5432/dummy?schema=public"
-
-# Generate Prisma Client and build
 RUN pnpm run build
 
-# Expose port
-EXPOSE 3000
 
-# Start the application
+FROM node:${NODE_VERSION}-slim AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=4000
+
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable && corepack prepare pnpm@latest --activate \
+  && pnpm install --prod --frozen-lockfile
+
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/generated ./generated
+
+EXPOSE 4000
 CMD ["node", "dist/bootstrap/server.js"]
+
