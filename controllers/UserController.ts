@@ -105,7 +105,7 @@ export async function updateFav(req: Request, res: Response) {
   if (duration !== undefined) updateData.duration = duration;
   if (time !== undefined) updateData.time = time;
   if (action !== undefined) updateData.action = action;
-  if (req.file) updateData.image = req.file.filename;
+  if (req.file) updateData.image = path.basename(req.file.path);
 
   fav = await prismaDb.userFav.update({
     where: {
@@ -126,25 +126,24 @@ export async function deleteFav(req: Request, res: Response) {
   let msg;
   if (!id || !userCred) {
     msg = "fav movie/show not found";
+    return res.status(400).json({ message: msg })
   }
   const exist = await prismaDb.userFav.findFirst({
     where: { id: parseInt(id), userId: userCred.id, active: true }
   })
   if (!exist) {
     msg = "fav movie/show not found";
+    return res.status(400).json({ message: msg })
   }
   let fav;
-  if (!msg) {
-    fav = await prismaDb.userFav.update({
-      where: {
-        id: parseInt(id),
-        userId: userCred.id
-      },
-      data: { active: false }
-    });
-    return res.status(200).json({ message: "success" })
-  }
-  return res.status(400).json({ message: msg })
+  fav = await prismaDb.userFav.update({
+    where: {
+      id: parseInt(id),
+      userId: userCred.id
+    },
+    data: { active: false }
+  });
+  return res.status(200).json({ message: "success" })
 }
 
 export async function getAll(req: Request, res: Response) {
